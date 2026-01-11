@@ -1,0 +1,59 @@
+// BunziMeal Prisma schema (initial)
+// Set DATABASE_URL in apps/api/.env (use Supabase Postgres connection string)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  passwordHash  String
+  firstName     String?
+  lastName      String?
+  deletedAt     DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  Profile       Profile?
+}
+
+model Profile {
+  id         String  @id @default(uuid())
+  userId     String  @unique
+  user       User    @relation(fields: [userId], references: [id])
+  age        Int?
+  sex        String?
+  heightCm   Int?
+  weightKg   Int?
+  country    String?
+  currency   String?
+  unitSystem String? // 'metric' | 'imperial'
+}
+
+model OtpCode {
+  id         String   @id @default(uuid())
+  email      String
+  codeHash   String
+  purpose    String   // 'verify' | 'reset'
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime @default(now())
+}
+
+model RefreshToken {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  tokenHash  String
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  userAgent  String?
+  ip         String?
+  createdAt  DateTime @default(now())
+}
