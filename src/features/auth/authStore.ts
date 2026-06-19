@@ -83,14 +83,11 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     try {
       if (t) {
         setAccessToken(t);
-        // We call fetchMe directly to populate the user state
         const { data } = await http.get(`/users/me`);
         set({ token: t, user: data as User });
       }
       await get().fetchCountries();
     } catch (e) {
-      // If fetchMe fails, api.ts handles clearing the token.
-      // We just ensure the app doesn't crash here.
       setAccessToken(null);
       set({ token: null, user: null });
     } finally {
@@ -110,7 +107,6 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     } catch (e: any) {
       const msg = handleError(e, {
         fallbackMessage: "Login failed",
-        silent: true,
       });
       set({ error: msg });
       throw e;
