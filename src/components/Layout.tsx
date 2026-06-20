@@ -64,7 +64,7 @@ function Sidebar({
     <>
       {/* Light Overlay */}
       <div
-        className={`fixed inset-0 bg-primary/20 backdrop-blur-sm z-40 transition-opacity duration-300 md:hidden ${
+        className={`fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-40 transition-opacity duration-300 md:hidden ${
           open
             ? "opacity-100 pointer-events-auto"
             : "opacity-0 pointer-events-none"
@@ -81,7 +81,7 @@ function Sidebar({
         <div className="p-8 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2 group">
             <div className="bg-primary p-2 rounded-xl">
-              <img src={logo} alt="Bunzi" className="h-6 w-6" />
+              <img src={logo} alt="Bunzi" className="h-6 w-6 brightness-0 invert" />
             </div>
             <span className="font-bold text-2xl tracking-tighter text-primary uppercase italic">
               BunziMeal
@@ -120,7 +120,7 @@ function Sidebar({
                 size={20}
                 className="group-hover:scale-110 transition-transform"
               />
-              <span className="tracking-tight text-sm uppercase tracking-widest">
+              <span className="tracking-tight text-sm">
                 {link.name}
               </span>
             </NavLink>
@@ -194,7 +194,7 @@ export function AdminLayout() {
           </span>
           <button
             onClick={() => setSidebarOpen(true)}
-            className="text-primary p-2"
+            className="text-primary p-2 bg-slate-50 rounded-xl transition-colors duration-300"
           >
             <Menu size={24} />
           </button>

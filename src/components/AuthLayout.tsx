@@ -4,7 +4,7 @@ import SupportContact from "./SupportContact";
 
 export default function AuthLayout() {
   return (
-    <div className="min-h-dvh grid grid-cols-1 md:grid-cols-2 bg-white">
+    <div className="min-h-dvh grid grid-cols-1 md:grid-cols-2 bg-slate-50">
       {/* LEFT SIDE: BRAND HERO */}
       <div className="hidden md:flex bg-primary text-white items-center justify-center p-12 relative overflow-hidden">
         {/* Subtle Brand Texture */}
@@ -21,7 +21,7 @@ export default function AuthLayout() {
             <span>BunziMeal</span>
           </Link>
 
-          <div className="space-y-2">
+          <div className="space-y-3">
             <h2 className="text-4xl font-bold leading-tight tracking-tight">
               Smarter meal planning for busy people.
             </h2>
@@ -56,7 +56,7 @@ export default function AuthLayout() {
             <div className="bg-primary p-2 rounded-xl">
               <img src={logo} alt="Bunzi" className="h-6 w-6" />
             </div>
-            <span className="font-black text-2xl tracking-tighter text-primary uppercase italic">
+            <span className="font-bold text-2xl tracking-tighter text-primary uppercase italic">
               BunziMeal
             </span>
           </div>
