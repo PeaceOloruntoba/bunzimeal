@@ -1,5 +1,3 @@
-import React from "react";
-
 export function Spinner({ size = 24, color = "currentColor" }: { size?: number; color?: string }) {
   return (
     <div className="animate-spin" style={{ width: size, height: size }}>

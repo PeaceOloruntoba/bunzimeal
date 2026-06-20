@@ -16,16 +16,16 @@ import Reset from "../features/auth/views/Reset";
 // Core App Views
 import Dashboard from "../features/dashboard/views/Dashboard";
 import AI from "../features/ai-chat/views/AI";
-import Recipes from "../features/nutrition/views/Recipes";
-import RecipeDetails from "../features/nutrition/views/RecipeDetails";
+import Recipes from "../features/recipes/views/Recipes";
+import RecipeDetails from "../features/recipes/views/RecipeDetails";
 import Nutrition from "../features/nutrition/views/Nutrition";
 import Pantry from "../features/pantry/views/Pantry";
 import Shopping from "../features/shopping-list/views/Shopping";
-import Settings from "../features/profile/views/Settings";
-import SettingsEditProfile from "../features/profile/views/SettingsEditProfile";
+import Settings from "../features/settings/views/Settings";
+import SettingsEditProfile from "../features/settings/views/SettingsEditProfile";
 import Billing from "../features/billing/views/Billing";
 import Processing from "../features/billing/views/Processing";
-import AffiliateApply from "../features/referrals/views/AffiliateApply";
+import AffiliateApply from "../features/affiliate/views/AffiliateApply";
 
 // Admin Views
 import AdminDashboard from "../features/admin/dashboard/views/Dashboard";

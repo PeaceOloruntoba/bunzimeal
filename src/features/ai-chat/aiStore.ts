@@ -5,36 +5,43 @@ import { handleError } from "../../utils/handleError";
 type Message = {
   id: string;
   role: "user" | "assistant" | "system";
-  content: string;
+  text: string;
   timestamp: Date;
 };
 
-type State = {
+type AIState = {
   messages: Message[];
+  streaming: boolean;
   loading: boolean;
   error: string | null;
+  lastUsage: { totalTokens: number } | null;
   persona: "dietitian" | "clinical_nutritionist";
 };
 
-type Actions = {
-  sendMessage: (content: string) => Promise<void>;
-  setPersona: (persona: "dietitian" | "clinical_nutritionist") => void;
-  clearChat: () => void;
-  clearError: () => void;
+type AIActions = {
+  ensureSession: () => Promise<void>;
   loadHistory: () => Promise<void>;
+  sendMessage: (text: string, options?: { stream: boolean }) => Promise<void>;
+  generatePlan: (payload: { prompt: string; budget?: string; max_prep_minutes?: number }) => Promise<void>;
+  clearError: () => void;
+  setPersona: (persona: "dietitian" | "clinical_nutritionist") => void;
 };
 
-export const useAIStore = create<State & Actions>((set, get) => ({
+export const useAIStore = create<AIState & AIActions>((set, get) => ({
   messages: [],
+  streaming: false,
   loading: false,
   error: null,
+  lastUsage: null,
   persona: "dietitian",
 
-  setPersona: (persona) => set({ persona }),
-
-  clearChat: () => set({ messages: [] }),
-
-  clearError: () => set({ error: null }),
+  ensureSession: async () => {
+    try {
+      await http.get(`/ai/session`);
+    } catch (e: any) {
+      // Ignore session errors
+    }
+  },
 
   loadHistory: async () => {
     set({ loading: true, error: null });
@@ -52,33 +59,44 @@ export const useAIStore = create<State & Actions>((set, get) => ({
     }
   },
 
-  sendMessage: async (content) => {
-    set({ loading: true, error: null });
+  sendMessage: async (text, options) => {
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
-      content,
+      text,
       timestamp: new Date(),
     };
-    set({ messages: [...get().messages, userMessage] });
+    set({ messages: [...get().messages, userMessage], loading: true, streaming: !!options?.stream, error: null });
 
     try {
-      const { data } = await http.post(`/ai/chat`, {
-        message: content,
-        persona: get().persona,
-      });
+      const { data } = await http.post(`/ai/chat`, { message: text, persona: get().persona, stream: options?.stream });
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: data.content,
+        text: data.content,
         timestamp: new Date(),
       };
-      set({ messages: [...get().messages, assistantMessage] });
+      set({ messages: [...get().messages, assistantMessage], lastUsage: { totalTokens: data.totalTokens || 0 } });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to send message" }) });
+    } finally {
+      set({ loading: false, streaming: false });
+    }
+  },
+
+  generatePlan: async (payload) => {
+    set({ loading: true, error: null });
+    try {
+      await http.post(`/ai/plan`, payload);
+      // Optionally refresh meals store here
+    } catch (e: any) {
+      set({ error: handleError(e, { fallbackMessage: "Failed to generate meal plan" }) });
       throw e;
     } finally {
       set({ loading: false });
     }
   },
+
+  clearError: () => set({ error: null }),
+  setPersona: (persona) => set({ persona }),
 }));

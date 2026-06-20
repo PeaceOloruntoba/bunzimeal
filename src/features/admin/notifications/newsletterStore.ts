@@ -5,7 +5,7 @@ import { handleError } from "../../../utils/handleError";
 type State = {
   title: string;
   body_html: string;
-  exclude_user_ids: string[];
+  exclude_user_ids: string[]; // selected users to exclude from send
   loading: boolean;
   error: string | null;
   preview_html: string | null;
@@ -52,6 +52,7 @@ export const useNewsletterStore = create<State & Actions>((set, get) => ({
       const { data } = await http.post(`/admin/newsletters`, {
         title,
         body_html,
+        // backend supports user_id as exclusion input as well, but send both for clarity
         user_id: exclude_user_ids,
         exclude_user_ids,
       });

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router";
 import { logo } from "../../../assets";
 import { useAuthStore } from "../../auth/authStore";
-import { useContentStore } from "../../content/contentStore";
+
 import { useSEO } from "../../../hooks/useSEO";
 import { trackPageView } from "../../../utils/analytics";
 import { PAGE_SEO } from "../../../utils/seo";
@@ -31,8 +31,7 @@ const MEAL_IMAGES = [
 export default function Landing() {
   const [idx, setIdx] = useState(0);
   const images = useMemo(() => MEAL_IMAGES, []);
-  const { fetchPublicPlans, plans } = useAuthStore();
-  const { fetchFaqs } = useContentStore();
+  const { plans } = useAuthStore();
   const { Helmet } = useSEO(PAGE_SEO.landing);
 
   const today = new Date();

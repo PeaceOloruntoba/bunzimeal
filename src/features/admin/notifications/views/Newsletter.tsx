@@ -1,3 +1,171 @@
+import { useEffect } from "react";
+import { toast } from "../../../../utils/toast";
+import QuillEditor from "../../../../components/QuillEditor";
+import { useAdminStore } from "../../users/adminStore";
+import { useNewsletterStore } from "../newsletterStore";
+
 export default function Newsletter() {
-  return <div className="p-4">Newsletter</div>;
+  const { users, listUsers, loading: usersLoading, error: usersError } = useAdminStore();
+  const {
+    title,
+    body_html,
+    exclude_user_ids,
+    loading,
+    error,
+    setTitle,
+    setBody,
+    toggleExcluded,
+    clearSelection,
+    send,
+    preview_html,
+    preview_loading,
+    preview_user_id,
+    setPreviewUserId,
+    preview,
+    clearPreview,
+  } = useNewsletterStore();
+
+  useEffect(() => {
+    listUsers();
+  }, []);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const res = await send();
+    if (res) {
+      toast.success("Newsletter sent");
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-6">
+      <h1 className="text-2xl font-semibold mb-4">Send Newsletter</h1>
+
+      {/* Errors */}
+      {(usersError || error) && (
+        <div className="mb-4 text-red-600">{usersError || error}</div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Left: user multiselect (exclude list) */}
+        <div className="md:col-span-1 border rounded-md bg-white overflow-hidden">
+          <div className="px-3 py-2 border-b flex items-center justify-between">
+            <div className="font-medium">Exclude recipients</div>
+            <button
+              type="button"
+              onClick={clearSelection}
+              className="text-xs px-2 py-1 border rounded hover:bg-gray-50"
+            >
+              Clear
+            </button>
+          </div>
+          <div className="max-h-[480px] overflow-auto">
+            {usersLoading ? (
+              <div className="p-3 text-sm text-gray-500">Loading users...</div>
+            ) : users.length === 0 ? (
+              <div className="p-3 text-sm text-gray-500">No users</div>
+            ) : (
+              <ul className="divide-y">
+                {users.map((u: any) => (
+                  <li key={u.id} className="flex items-center gap-2 p-2">
+                    <input
+                      id={`u-${u.id}`}
+                      type="checkbox"
+                      checked={exclude_user_ids.includes(u.id)}
+                      onChange={() => toggleExcluded(u.id)}
+                      className="h-4 w-4"
+                    />
+                    <label htmlFor={`u-${u.id}`} className="cursor-pointer text-sm">
+                      <div className="font-medium">{u.email}</div>
+                      <div className="text-gray-500">{u.display_name || u.name || "-"}</div>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <div className="px-3 py-2 border-t text-xs text-gray-500">
+            Excluding {exclude_user_ids.length} user(s)
+          </div>
+        </div>
+
+        {/* Right: compose */}
+        <form onSubmit={onSubmit} className="md:col-span-2 space-y-3 max-h-[480px]">
+          <input
+            className="w-full border rounded px-3 py-2"
+            placeholder="Title (subject)"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          <div className="border rounded">
+            <QuillEditor
+              value={body_html}
+              onChange={setBody}
+              placeholder="Write your newsletter..."
+              className="h-full"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              type="submit"
+              disabled={loading || !title || !body_html}
+              className="h-10 px-4 rounded bg-primary text-white disabled:opacity-60 hover:bg-primary/90 transition"
+            >
+              {loading ? "Sending..." : "Send newsletter"}
+            </button>
+            <span className="text-xs text-gray-500">Will send to all verified users except those excluded</span>
+          </div>
+
+          <div className="border rounded p-3 space-y-3">
+            <div className="flex items-center gap-2">
+              <select
+                value={preview_user_id || ""}
+                onChange={(e) => setPreviewUserId(e.target.value || null)}
+                className="h-10 px-3 border rounded"
+              >
+                <option value="">Preview as sample user</option>
+                {users.map((u: any) => (
+                  <option key={u.id} value={u.id}>
+                    {u.email} {u.name ? `(${u.name})` : ""}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                disabled={preview_loading || !body_html}
+                onClick={async () => {
+                  await preview();
+                }}
+                className="h-10 px-4 rounded bg-gray-800 text-white disabled:opacity-60 hover:bg-gray-700 transition"
+              >
+                {preview_loading ? "Rendering..." : "Preview"}
+              </button>
+              {preview_html && (
+                <button
+                  type="button"
+                  onClick={clearPreview}
+                  className="h-10 px-3 rounded border"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <div className="border rounded max-h-[280px] overflow-auto bg-white">
+              {preview_html ? (
+                <div
+                  className="p-4"
+                  dangerouslySetInnerHTML={{ __html: preview_html }}
+                />
+              ) : (
+                <div className="p-4 text-sm text-gray-500">
+                  No preview yet
+                </div>
+              )}
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }

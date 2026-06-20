@@ -6,7 +6,7 @@ export type BillingPlan = {
   id: number;
   country_id: number;
   currency: string;
-  price: number;
+  price: number; // whole number (e.g., 99.99)
   price_cents: number;
   price_monthly_cents: number;
   price_quarterly_cents: number;
@@ -52,6 +52,7 @@ export const useAdminSubsStore = create<State & Actions>((set, get) => ({
     try {
       const payload = { price };
       await http.post(`/admin/billing/${countryId}/price`, payload);
+      // Refresh plans after update
       await get().fetchAllPlans();
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to set country price" }) });

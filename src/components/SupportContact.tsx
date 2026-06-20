@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useAuthStore } from "../features/auth/authStore";
 import {
   MessageCircle,
   X,
@@ -7,7 +8,6 @@ import {
   ShieldCheck,
   ExternalLink,
 } from "lucide-react";
-import { useAuthStore } from "../features/auth/authStore";
 
 export default function SupportContact() {
   const { user } = useAuthStore();
@@ -59,17 +59,17 @@ export default function SupportContact() {
           role="dialog"
         >
           {/* Brand Accent Header */}
-          <div className="h-2 w-full bg-gradient-to-r from-primary via-accent-2 to-accent" />
+          <div className="h-2 w-full bg-gradient-to-r from-primary via-accent2 to-accent" />
 
           <div className="p-8 space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-slate-50 rounded-xl border border-slate-100">
-                  <ShieldCheck className="text-accent-2" size={20} />
+                  <ShieldCheck className="text-accent2" size={20} />
                 </div>
                 <h2 className="text-xl font-black text-primary uppercase italic tracking-tighter">
-                  Bunzi <span className="text-accent-2">Concierge</span>
+                  Bunzi <span className="text-accent2">Concierge</span>
                 </h2>
               </div>
               <button
@@ -89,7 +89,7 @@ export default function SupportContact() {
               {/* Response Time Badge */}
               <div className="flex items-center gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100">
                 <div className="bg-white p-2 rounded-lg shadow-sm">
-                  <Clock className="text-accent-2" size={18} />
+                  <Clock className="text-accent2" size={18} />
                 </div>
                 <div className="text-[10px] font-black uppercase tracking-widest">
                   <span className="text-slate-400 block mb-0.5">

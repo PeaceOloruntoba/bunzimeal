@@ -2,30 +2,45 @@ import { create } from "zustand";
 import { http } from "../../config/api";
 import { handleError } from "../../utils/handleError";
 
-type State = {
-  streak: number;
+type StatsState = {
+  totals: { calories: number; protein_grams: number; carbs_grams: number; fat_grams: number } | null;
   loading: boolean;
   error: string | null;
+  streak: number;
 };
 
-type Actions = {
+type StatsActions = {
+  summary: (period: string) => Promise<void>;
   fetchStreak: () => Promise<void>;
   logAction: () => Promise<void>;
   clearError: () => void;
 };
 
-export const useDashboardStore = create<State & Actions>((set, get) => ({
-  streak: 0,
+export const useDashboardStore = create<StatsState & StatsActions>((set, get) => ({
+  totals: null,
   loading: false,
   error: null,
+  streak: 0,
+
+  summary: async (period) => {
+    set({ loading: true, error: null });
+    try {
+      const { data } = await http.get(`/stats/summary?period=${period}`);
+      set({ totals: data });
+    } catch (e: any) {
+      set({ error: handleError(e, { fallbackMessage: "Failed to load stats" }) });
+    } finally {
+      set({ loading: false });
+    }
+  },
 
   fetchStreak: async () => {
     set({ loading: true, error: null });
     try {
       const { data } = await http.get(`/stats/streak`);
-      set({ streak: data?.streak || 0 });
+      set({ streak: data.streak || 0 });
     } catch (e: any) {
-      set({ error: handleError(e, { fallbackMessage: "Failed to fetch streak" }) });
+      set({ error: handleError(e, { fallbackMessage: "Failed to load streak" }) });
     } finally {
       set({ loading: false });
     }
