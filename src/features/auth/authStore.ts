@@ -211,7 +211,7 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
 
   fetchGoalKeys: async () => {
     const { data } = await http.get(`/health/goals/available`);
-    return (data as any).data || [];
+    return (data as any).data?.keys || [];
   },
 
   setGoals: async (goals) => {
