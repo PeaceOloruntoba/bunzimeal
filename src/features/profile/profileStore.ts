@@ -73,11 +73,11 @@ export const useProfileStore = create<State & Actions>((set) => ({
   getProfile: async () => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.get<{ user: ProfileUser; profile: ProfileData }>(`/profile`);
-      set({ user: data.user, profile: data.profile });
-      return data;
+      const { data } = await http.get<{ user: ProfileUser; profile: ProfileData }>(`/users/profile`);
+      set({ user: (data as any).data?.user || data.user, profile: (data as any).data?.profile || data.profile });
+      return (data as any).data || data;
     } catch (e: any) {
-      set({ error: handleError(e, { fallbackMessage: "Failed to load profile" }) });
+      set({ error: handleError(e, { fallbackMessage: 'Failed to load profile' }) });
       return null;
     } finally {
       set({ loading: false });
@@ -88,11 +88,11 @@ export const useProfileStore = create<State & Actions>((set) => ({
     set({ saving: true, error: null });
     try {
       const fd = buildFormData(payload);
-      const { data } = await http.put<{ user: ProfileUser; profile: ProfileData }>(`/profile`, fd, { headers: { "Content-Type": "multipart/form-data" } });
-      set({ user: data.user, profile: data.profile });
-      return data;
+      const { data } = await http.patch<{ user: ProfileUser; profile: ProfileData }>(`/users/profile`, fd, { headers: { "Content-Type": "multipart/form-data" } });
+      set({ user: (data as any).data?.user || data.user, profile: (data as any).data?.profile || data.profile });
+      return (data as any).data || data;
     } catch (e: any) {
-      set({ error: handleError(e, { fallbackMessage: "Failed to save profile" }) });
+      set({ error: handleError(e, { fallbackMessage: 'Failed to save profile' }) });
       return null;
     } finally {
       set({ saving: false });
@@ -104,9 +104,9 @@ export const useProfileStore = create<State & Actions>((set) => ({
   updateCountry: async (country_id: number | null) => {
     set({ saving: true, error: null });
     try {
-      const { data } = await http.patch<{ user: ProfileUser }>(`/profile/country`, { country_id });
-      set({ user: data.user });
-      return data.user;
+      const { data } = await http.patch<{ user: ProfileUser }>(`/users/profile`, { country_id });
+      set({ user: (data as any).data?.user || data.user });
+      return (data as any).data?.user || data.user;
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: 'Failed to update country' }) });
       return null;

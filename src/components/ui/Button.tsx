@@ -33,7 +33,7 @@ export function Button({
 
   return (
     <button
-      className={`${baseClasses} ${variantClasses[variant]} ${className}`}
+      className={`${baseClasses} ${variantClasses[variant]} ${className} p-2`}
       disabled={loading || disabled}
       {...props}
     >

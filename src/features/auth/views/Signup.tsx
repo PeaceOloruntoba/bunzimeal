@@ -187,7 +187,7 @@ export default function Signup() {
         <Button
           loading={registering}
           disabled={!email || !password || !firstName || !countryId}
-          onClick={onRegister}
+          onClick={onRegister} className="w-full"
         >
           <span>Create Account</span>
           <ArrowRight size={20} strokeWidth={3} />

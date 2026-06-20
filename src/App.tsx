@@ -13,7 +13,7 @@ export default function App() {
 
   return (
     <>
-      <Toaster />
+      <Toaster position="top-right" richColors />
       <RouterProvider router={router} />
     </>
   );

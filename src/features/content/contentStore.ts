@@ -36,8 +36,8 @@ export const useContentStore = create<State & Actions>((set, get) => ({
   fetchContents: async () => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.get('/content/content');
-      set({ contents: data || null });
+      const { data } = await http.get('/content');
+      set({ contents: (data as any).data || null });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: 'Failed to load site contents' }) });
       throw e;
@@ -48,7 +48,7 @@ export const useContentStore = create<State & Actions>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const { data } = await http.get('/content/faqs');
-      set({ faqs: data || [] });
+      set({ faqs: (data as any).data || [] });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: 'Failed to load faqs' }) });
       throw e;
@@ -58,8 +58,8 @@ export const useContentStore = create<State & Actions>((set, get) => ({
   adminFetchContents: async () => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.get('/admin/content');
-      set({ contents: data || null });
+      const { data } = await http.get('/admin/content/site-contents');
+      set({ contents: (data as any).data || null });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: 'Failed to load contents' }) });
       throw e;
@@ -69,8 +69,8 @@ export const useContentStore = create<State & Actions>((set, get) => ({
   adminUpdateContents: async (payload) => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.post('/admin/content', payload);
-      set({ contents: data || null });
+      const { data } = await http.patch('/admin/content/site-contents', payload);
+      set({ contents: (data as any).data || null });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: 'Failed to save contents' }) });
       throw e;
@@ -80,7 +80,7 @@ export const useContentStore = create<State & Actions>((set, get) => ({
   adminCreateFaq: async (q, a) => {
     set({ loading: true, error: null });
     try {
-      await http.post('/admin/faqs', { question: q, answer: a });
+      await http.post('/admin/content/faqs', { question: q, answer: a });
       await get().adminFetchContents();
       await get().fetchFaqs();
     } catch (e: any) {
@@ -92,7 +92,7 @@ export const useContentStore = create<State & Actions>((set, get) => ({
   adminUpdateFaq: async (id, q, a) => {
     set({ loading: true, error: null });
     try {
-      await http.put(`/admin/faqs/${id}`, { question: q, answer: a });
+      await http.patch(`/admin/content/faqs/${id}`, { question: q, answer: a });
       await get().fetchFaqs();
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: 'Failed to update faq' }) });
@@ -103,7 +103,7 @@ export const useContentStore = create<State & Actions>((set, get) => ({
   adminDeleteFaq: async (id) => {
     set({ loading: true, error: null });
     try {
-      await http.delete(`/admin/faqs/${id}`);
+      await http.delete(`/admin/content/faqs/${id}`);
       await get().fetchFaqs();
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: 'Failed to delete faq' }) });

@@ -83,8 +83,8 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     try {
       if (t) {
         setAccessToken(t);
-        const { data } = await http.get(`/users/me`);
-        set({ token: t, user: data as User });
+        const { data } = await http.get(`/users/profile`);
+        set({ token: t, user: (data as any).data?.user as User || (data as any).user as User });
       }
       await get().fetchCountries();
     } catch (e) {
@@ -99,11 +99,11 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const { data } = await http.post(`/auth/login`, payload);
-      const token = (data as any)?.token;
+      const token = (data as any)?.data?.token;
       if (!token) throw new Error("Authentication failed: No token received");
 
       setAccessToken(token);
-      set({ token, user: data.user as User });
+      set({ token, user: (data as any).data.user as User });
     } catch (e: any) {
       const msg = handleError(e, {
         fallbackMessage: "Login failed",
@@ -132,8 +132,8 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
 
   fetchMe: async () => {
     try {
-      const { data } = await http.get(`/users/me`);
-      set({ user: data as User });
+      const { data } = await http.get(`/users/profile`);
+      set({ user: (data as any).data?.user as User });
     } catch (e) {
       set({ token: null, user: null });
       setAccessToken(null);
@@ -160,7 +160,7 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
 
   fetchCountries: async () => {
     try {
-      const { data } = await http.get(`/countries`);
+      const { data } = await http.get(`/localization/countries`);
       set({ countries: data || [] });
     } catch (e) {}
   },
@@ -168,8 +168,8 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
   fetchPublicPlans: async () => {
     set({ loading: true });
     try {
-      const { data } = await http.get(`/billing/public/plans`);
-      set({ plans: data.plans || data || [] });
+      const { data } = await http.get(`/billing/public-plan`);
+      set({ plans: (data as any).data?.plans || data.plans || data || [] });
     } finally {
       set({ loading: false });
     }
@@ -210,12 +210,12 @@ export const useAuthStore = create<State & Actions>((set, get) => ({
   },
 
   fetchGoalKeys: async () => {
-    const { data } = await http.get(`/goals/keys`);
-    return data?.keys || [];
+    const { data } = await http.get(`/health/goals/available`);
+    return (data as any).data || [];
   },
 
   setGoals: async (goals) => {
-    await http.put(`/goals`, { goals });
+    await http.put(`/health/goals`, { goals });
     return true;
   },
 

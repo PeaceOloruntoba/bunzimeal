@@ -49,6 +49,7 @@ export default function Login() {
     } catch (e: any) {
       const status = e?.response?.status;
       const msg = e?.response?.data?.errorMessage || e?.response?.data?.error;
+      toast.error(msg || "Login failed");
       if (status === 403 && /verify/i.test(String(msg || ""))) {
         try {
           await useAuthStore.getState().resendOtp({ email, purpose: "verify" });

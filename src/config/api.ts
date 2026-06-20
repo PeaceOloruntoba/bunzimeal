@@ -4,7 +4,7 @@ import { useAuthStore } from "../features/auth/authStore";
 const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
   import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, "") ||
-  "http://localhost:4000/v1";
+  "http://localhost:4000/api/v1";
 
 export const http = axios.create({
   baseURL: API_BASE_URL,
@@ -75,7 +75,7 @@ http.interceptors.response.use(
               {},
               { withCredentials: true }
             );
-            const newToken = data?.token as string | undefined;
+            const newToken = data?.data?.token as string | undefined;
             if (newToken) {
               setAccessToken(newToken);
               useAuthStore.getState().token = newToken;
