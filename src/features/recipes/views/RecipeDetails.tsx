@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { useRecipesStore } from "../recipesStore";
-import { useNutritionStore } from "../../nutrition/nutritionStore";
 import { Spinner } from "../../../components/Spinner";
 import {
   ArrowLeft,
@@ -26,21 +25,15 @@ export default function RecipeDetails() {
     error: recipeError,
     get,
   } = useRecipesStore();
-  const {
-    items: nutritionItems,
-    loading: nutritionLoading,
-    fetch: fetchNutrition,
-  } = useNutritionStore();
 
   useEffect(() => {
     if (id) {
       get(id);
-      fetchNutrition();
     }
-  }, [id, get, fetchNutrition]);
+  }, [id, get]);
 
-  const nutrition = nutritionItems.find((n) => n.recipe_id === Number(id));
-  const isLoading = recipeLoading || nutritionLoading;
+  const nutrition = current?.full_nutrition;
+  const isLoading = recipeLoading;
 
   if (isLoading)
     return (

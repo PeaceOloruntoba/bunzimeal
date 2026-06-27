@@ -26,7 +26,7 @@ export const usePantryStore = create<State & Actions>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const { data } = await http.get(`/pantry`);
-      set({ items: data });
+      set({ items: data.data });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to fetch pantry" }) });
     } finally {
@@ -38,7 +38,7 @@ export const usePantryStore = create<State & Actions>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const { data } = await http.post(`/pantry`, payload);
-      set({ items: [data, ...get().items] });
+      set({ items: [data.data, ...get().items] });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to add pantry item" }) });
     } finally {
@@ -50,7 +50,7 @@ export const usePantryStore = create<State & Actions>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const { data } = await http.put(`/pantry/${id}`, payload);
-      set({ items: get().items.map((x: any) => (x.id === id ? { ...x, ...data } : x)) });
+      set({ items: get().items.map((x: any) => (x.id === id ? { ...x, ...data.data } : x)) });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to update pantry item" }) });
     } finally {
@@ -76,7 +76,7 @@ export const usePantryStore = create<State & Actions>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const { data } = await http.post(`/pantry/${id}/consume`, { amount });
-      set({ items: get().items.map((x: any) => (x.id === id ? { ...x, ...data } : x)) });
+      set({ items: get().items.map((x: any) => (x.id === id ? { ...x, ...data.data } : x)) });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to consume ingredient" }) });
       throw e;

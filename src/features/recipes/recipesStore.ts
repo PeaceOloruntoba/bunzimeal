@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { http } from "../../config/api";
 import { handleError } from "../../utils/handleError";
 
-export type Recipe = { id: number; name: string; category?: string; image_url?: string };
+export type Recipe = { id: number; name: string; category?: string; image_url?: string; description?: string; details?: string; calories?: number };
 
 type State = {
   items: Recipe[];
@@ -30,8 +30,8 @@ export const useRecipesStore = create<State & Actions>((set, get) => ({
   fetch: async () => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.get<Recipe[]>(`/recipes`);
-      set({ items: data });
+      const { data } = await http.get<{ success: boolean; data: Recipe[] }>(`/nutrition/recipes`);
+      set({ items: data.data });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to fetch recipes" }) });
     } finally {
@@ -42,8 +42,8 @@ export const useRecipesStore = create<State & Actions>((set, get) => ({
   get: async (id) => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.get(`/recipes/${id}`);
-      set({ current: data });
+      const { data } = await http.get(`/nutrition/recipes/${id}`);
+      set({ current: data.data });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to fetch recipe" }) });
     } finally {
@@ -54,8 +54,8 @@ export const useRecipesStore = create<State & Actions>((set, get) => ({
   create: async (payload) => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.post(`/recipes`, payload);
-      set({ items: [data, ...get().items] });
+      const { data } = await http.post(`/nutrition/recipes`, payload);
+      set({ items: [data.data, ...get().items] });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to create recipe" }) });
     } finally {
@@ -66,10 +66,10 @@ export const useRecipesStore = create<State & Actions>((set, get) => ({
   update: async (id, payload) => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.put(`/recipes/${id}`, payload);
+      const { data } = await http.put(`/nutrition/recipes/${id}`, payload);
       set({
-        items: get().items.map((x) => (x.id === (typeof id === "string" ? Number(id) : id) ? { ...x, ...data } : x)),
-        current: get().current && (get().current.id === id ? { ...get().current, ...data } : get().current),
+        items: get().items.map((x) => (x.id === (typeof id === "string" ? Number(id) : id) ? { ...x, ...data.data } : x)),
+        current: get().current && (get().current.id === id ? { ...get().current, ...data.data } : get().current),
       });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to update recipe" }) });
@@ -81,10 +81,10 @@ export const useRecipesStore = create<State & Actions>((set, get) => ({
   replaceImage: async (id, formData) => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.post(`/recipes/${id}/image`, formData, { headers: { "Content-Type": "multipart/form-data" } });
+      const { data } = await http.post(`/nutrition/recipes/${id}/image`, formData, { headers: { "Content-Type": "multipart/form-data" } });
       set({
-        items: get().items.map((x) => (x.id === (typeof id === "string" ? Number(id) : id) ? { ...x, ...data } : x)),
-        current: get().current && (get().current.id === id ? { ...get().current, ...data } : get().current),
+        items: get().items.map((x) => (x.id === (typeof id === "string" ? Number(id) : id) ? { ...x, ...data.data } : x)),
+        current: get().current && (get().current.id === id ? { ...get().current, ...data.data } : get().current),
       });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to replace image" }) });
@@ -96,7 +96,7 @@ export const useRecipesStore = create<State & Actions>((set, get) => ({
   remove: async (id) => {
     set({ loading: true, error: null });
     try {
-      await http.delete(`/recipes/${id}`);
+      await http.delete(`/nutrition/recipes/${id}`);
       const nid = typeof id === "string" ? Number(id) : id;
       set({ items: get().items.filter((x) => x.id !== nid) });
       if (get().current && get().current.id === id) set({ current: null });

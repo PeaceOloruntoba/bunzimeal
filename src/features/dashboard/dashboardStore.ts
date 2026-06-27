@@ -26,7 +26,7 @@ export const useDashboardStore = create<StatsState & StatsActions>((set, get) =>
     set({ loading: true, error: null });
     try {
       const { data } = await http.get(`/users/stats/summary?period=${period}`);
-      set({ totals: (data as any).data });
+      set({ totals: data.data });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to load stats" }) });
     } finally {
@@ -38,7 +38,7 @@ export const useDashboardStore = create<StatsState & StatsActions>((set, get) =>
     set({ loading: true, error: null });
     try {
       const { data } = await http.get(`/health/streak`);
-      set({ streak: (data as any).data?.streak || 0 });
+      set({ streak: data.data?.current_streak || 0 });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to load streak" }) });
     } finally {

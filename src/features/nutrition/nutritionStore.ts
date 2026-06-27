@@ -28,8 +28,8 @@ export const useNutritionStore = create<State & Actions>((set, get) => ({
   fetch: async (recipeId) => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.get(`/nutrition`, { params: recipeId ? { recipeId } : undefined });
-      set({ items: data });
+      const { data } = await http.get(`/nutrition/nutrition`, { params: recipeId ? { recipeId } : undefined });
+      set({ items: data.data });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to fetch nutrition" }) });
     } finally {
@@ -40,8 +40,8 @@ export const useNutritionStore = create<State & Actions>((set, get) => ({
   get: async (id) => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.get(`/nutrition/${id}`);
-      set({ current: data });
+      const { data } = await http.get(`/nutrition/nutrition/${id}`);
+      set({ current: data.data });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to fetch nutrition details" }) });
     } finally {
@@ -52,8 +52,8 @@ export const useNutritionStore = create<State & Actions>((set, get) => ({
   create: async (payload) => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.post(`/nutrition`, payload);
-      set({ items: [data, ...get().items] });
+      const { data } = await http.post(`/nutrition/nutrition`, payload);
+      set({ items: [data.data, ...get().items] });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to create nutrition" }) });
     } finally {
@@ -64,10 +64,10 @@ export const useNutritionStore = create<State & Actions>((set, get) => ({
   update: async (id, payload) => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.put(`/nutrition/${id}`, payload);
+      const { data } = await http.put(`/nutrition/nutrition/${id}`, payload);
       set({
-        items: get().items.map((x: any) => (x.id === id ? { ...x, ...data } : x)),
-        current: get().current && (get().current.id === id ? { ...get().current, ...data } : get().current),
+        items: get().items.map((x: any) => (x.id === id ? { ...x, ...data.data } : x)),
+        current: get().current && (get().current.id === id ? { ...get().current, ...data.data } : get().current),
       });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to update nutrition" }) });
@@ -79,7 +79,7 @@ export const useNutritionStore = create<State & Actions>((set, get) => ({
   remove: async (id) => {
     set({ loading: true, error: null });
     try {
-      await http.delete(`/nutrition/${id}`);
+      await http.delete(`/nutrition/nutrition/${id}`);
       set({ items: get().items.filter((x: any) => x.id !== id) });
       if (get().current && get().current.id === id) set({ current: null });
     } catch (e: any) {
@@ -94,7 +94,7 @@ export const useNutritionStore = create<State & Actions>((set, get) => ({
   consumeMeal: async (mealId) => {
     set({ loading: true, error: null });
     try {
-      await http.post(`/nutrition/${mealId}/consume`);
+      await http.post(`/nutrition/nutrition/${mealId}/consume`);
       await get().fetch();
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to consume meal" }) });

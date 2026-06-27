@@ -25,8 +25,8 @@ export const useShoppingStore = create<State & Actions>((set, get) => ({
   fetch: async () => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.get(`/shopping`);
-      set({ items: data });
+      const { data } = await http.get(`/shopping-list`);
+      set({ items: data.data });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to fetch shopping list" }) });
     } finally {
@@ -37,8 +37,8 @@ export const useShoppingStore = create<State & Actions>((set, get) => ({
   create: async (payload) => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.post(`/shopping`, payload);
-      set({ items: [data, ...get().items] });
+      const { data } = await http.post(`/shopping-list`, payload);
+      set({ items: [data.data, ...get().items] });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to add shopping item" }) });
     } finally {
@@ -49,8 +49,8 @@ export const useShoppingStore = create<State & Actions>((set, get) => ({
   update: async (id, payload) => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.put(`/shopping/${id}`, payload);
-      set({ items: get().items.map((x: any) => (x.id === id ? { ...x, ...data } : x)) });
+      const { data } = await http.put(`/shopping-list/${id}`, payload);
+      set({ items: get().items.map((x: any) => (x.id === id ? { ...x, ...data.data } : x)) });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to update shopping item" }) });
     } finally {
@@ -61,7 +61,7 @@ export const useShoppingStore = create<State & Actions>((set, get) => ({
   remove: async (id) => {
     set({ loading: true, error: null });
     try {
-      await http.delete(`/shopping/${id}`);
+      await http.delete(`/shopping-list/${id}`);
       set({ items: get().items.filter((x: any) => x.id !== id) });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to delete shopping item" }) });
@@ -75,8 +75,8 @@ export const useShoppingStore = create<State & Actions>((set, get) => ({
   togglePurchased: async (id) => {
     set({ loading: true, error: null });
     try {
-      const { data } = await http.post(`/shopping/${id}/toggle`);
-      set({ items: get().items.map((x: any) => (x.id === id ? { ...x, ...data } : x)) });
+      const { data } = await http.post(`/shopping-list/${id}/toggle`);
+      set({ items: get().items.map((x: any) => (x.id === id ? { ...x, ...data.data } : x)) });
     } catch (e: any) {
       set({ error: handleError(e, { fallbackMessage: "Failed to toggle purchased" }) });
     } finally {
